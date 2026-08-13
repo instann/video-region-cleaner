@@ -8,7 +8,7 @@ import numpy as np
 from pathlib import Path
 from PySide6.QtCore import QPoint, Qt
 
-from video_region_cleaner.gui import MainWindow
+from video_region_cleaner.gui import MainWindow, reveal_in_file_manager
 from video_region_cleaner.models import Region
 from video_region_cleaner.canvas import ViewMode
 
@@ -106,3 +106,13 @@ def test_editing_region_clears_stale_restoration_preview(qtbot):
     assert window.marked_radio.isChecked()
     assert not window.restored_radio.isChecked()
     assert np.array_equal(window.canvas._frame, original)
+
+
+def test_reveal_output_uses_finder_on_macos(monkeypatch, tmp_path: Path):
+    calls = []
+    output = tmp_path / "中文 output.mp4"
+    monkeypatch.setattr("video_region_cleaner.gui.sys.platform", "darwin")
+    monkeypatch.setattr("video_region_cleaner.gui.os.name", "posix")
+    monkeypatch.setattr("video_region_cleaner.gui.subprocess.Popen", lambda args, **kwargs: calls.append(args))
+    reveal_in_file_manager(output)
+    assert calls == [["open", "-R", str(output)]]

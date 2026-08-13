@@ -3,6 +3,19 @@
 Date: 2026-08-13 (Asia/Shanghai)  
 Host: Windows x64, Python 3.11.5 for development only
 
+## macOS compatibility verification
+
+Date: 2026-08-14 (Asia/Shanghai)
+Host: Apple Silicon arm64, macOS 26.2, Python 3.12.13 for development only
+
+- `QT_QPA_PLATFORM=offscreen .venv/bin/python -m pytest -q`: `36 passed`.
+- Pinned FFmpeg 8.1.2 and x264 sources were SHA-256 verified and compiled as native arm64 binaries with VideoToolbox and `libx264`; the build rejects `--enable-nonfree`.
+- `scripts/run_e2e.py` processed all 144 frames and FFprobe verified 960×540, 24 fps, 6 seconds, and an audio stream. VideoToolbox was unavailable in this session, and the tested runtime fallback selected `libx264`.
+- `scripts/build_macos.sh` generated and ad-hoc signed `VideoRegionCleaner.app`; `codesign --verify --deep --strict` passed and both the app executable and bundled FFmpeg report arm64.
+- The packaged executable independently processed the synthetic sample to a Chinese output path, preserved audio, and wrote a successful `E2E_RESULT.json` without invoking the development Python executable.
+
+The GitHub Actions matrix repeats the same tests and package self-test on Apple Silicon and Intel runners. Clean-machine Gatekeeper testing, Developer ID signing, notarization, and stapling remain maintainer release steps.
+
 ## Automated tests
 
 Command:

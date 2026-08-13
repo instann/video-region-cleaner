@@ -6,9 +6,10 @@ import logging
 import os
 from pathlib import Path
 import subprocess
+import sys
 
 from PySide6.QtCore import QSignalBlocker, QThread, QTimer, Qt, Slot
-from PySide6.QtGui import QAction, QCloseEvent, QDesktopServices, QIcon
+from PySide6.QtGui import QAction, QCloseEvent, QDesktopServices, QIcon, QKeySequence
 from PySide6.QtCore import QUrl
 from PySide6.QtWidgets import (
     QApplication, QButtonGroup, QCheckBox, QDoubleSpinBox, QFileDialog, QFormLayout,
@@ -19,7 +20,7 @@ from PySide6.QtWidgets import (
 
 from .canvas import VideoCanvas, ViewMode
 from .errors import RegionCleanerError, readable_error
-from .ffmpeg import ffmpeg_version, find_tool, probe_media, probe_nvenc
+from .ffmpeg import ffmpeg_version, find_tool, hardware_encoder_name, probe_media
 from .models import ExportProgress, ExportResult, MediaInfo, Region
 from .naming import default_output_path, validate_output_path
 from .video import read_frame, restore_frame
@@ -28,6 +29,16 @@ from .worker import ExportWorker
 
 LOGGER = logging.getLogger(__name__)
 VIDEO_FILTER = "视频文件 (*.mp4 *.mov *.mkv *.webm);;所有文件 (*.*)"
+
+
+def reveal_in_file_manager(path: Path) -> None:
+    """Reveal a generated file in Explorer/Finder, with a portable fallback."""
+    if os.name == "nt":
+        subprocess.Popen(["explorer.exe", "/select,", str(path)], shell=False)
+    elif sys.platform == "darwin":
+        subprocess.Popen(["open", "-R", str(path)], shell=False)
+    else:
+        QDesktopServices.openUrl(QUrl.fromLocalFile(str(path.parent)))
 
 
 def format_time(seconds: float | None) -> str:
@@ -65,7 +76,7 @@ class MainWindow(QMainWindow):
         toolbar.setMovable(False)
         self.addToolBar(toolbar)
         self.open_action = QAction(self.style().standardIcon(self.style().StandardPixmap.SP_DialogOpenButton), "打开视频", self)
-        self.open_action.setShortcut("Ctrl+O")
+        self.open_action.setShortcut(QKeySequence.StandardKey.Open)
         toolbar.addAction(self.open_action)
         toolbar.addSeparator()
         notice = QLabel("本地处理 · 不上传媒体 · 仅处理自有或获授权内容")
@@ -163,7 +174,9 @@ class MainWindow(QMainWindow):
         self.browse_output_button.setToolTip("选择输出文件")
         output_row.addWidget(self.output_edit, 1)
         output_row.addWidget(self.browse_output_button)
-        self.encoder_check = QCheckBox("优先使用 NVENC（实际探测失败自动回退）")
+        self.encoder_check = QCheckBox(
+            f"优先使用 {hardware_encoder_name()}（实际探测失败自动回退）"
+        )
         self.encoder_check.setChecked(True)
         self.tool_status = QLabel("正在检测…")
         self.tool_status.setWordWrap(True)
@@ -260,7 +273,10 @@ class MainWindow(QMainWindow):
     def _refresh_tool_status(self) -> None:
         if self.ffmpeg and self.ffprobe:
             try:
-                self.tool_status.setText(ffmpeg_version(self.ffmpeg) + "\nNVENC 将在导出时实际编码探测")
+                self.tool_status.setText(
+                    ffmpeg_version(self.ffmpeg)
+                    + f"\n{hardware_encoder_name()} 将在导出时实际编码探测"
+                )
                 return
             except BaseException as exc:
                 LOGGER.warning("FFmpeg check failed: %s", exc)
@@ -510,10 +526,7 @@ class MainWindow(QMainWindow):
     def open_output_folder(self) -> None:
         if not self.last_output:
             return
-        if os.name == "nt":
-            subprocess.Popen(["explorer.exe", "/select,", str(self.last_output)], shell=False)
-        else:
-            QDesktopServices.openUrl(QUrl.fromLocalFile(str(self.last_output.parent)))
+        reveal_in_file_manager(self.last_output)
 
     def _show_error(self, title: str, error: BaseException) -> None:
         message = readable_error(error)

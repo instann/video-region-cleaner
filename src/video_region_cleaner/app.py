@@ -34,8 +34,11 @@ def configure_logging() -> Path:
 
 
 def configure_ui_font(app: QApplication) -> None:
-    """Select a CJK-capable Windows UI font, including offscreen test runs."""
-    candidates = ["Microsoft YaHei UI", "Microsoft YaHei", "SimHei", "Noto Sans CJK SC"]
+    """Select a native CJK-capable UI font, including offscreen test runs."""
+    candidates = [
+        "PingFang SC", "Hiragino Sans GB", "Heiti SC",
+        "Microsoft YaHei UI", "Microsoft YaHei", "SimHei", "Noto Sans CJK SC",
+    ]
     families = set(QFontDatabase.families())
     for font_file in (
         Path("C:/Windows/Fonts/msyh.ttc"),
@@ -47,7 +50,11 @@ def configure_ui_font(app: QApplication) -> None:
             if identifier >= 0:
                 families.update(QFontDatabase.applicationFontFamilies(identifier))
     family = next((name for name in candidates if name in families), app.font().family())
-    app.setFont(QFont(family, 9))
+    font = QFont(app.font())
+    font.setFamily(family)
+    if sys.platform == "win32":
+        font.setPointSize(9)
+    app.setFont(font)
 
 
 def packaged_self_test(arguments: list[str]) -> int | None:
@@ -74,12 +81,12 @@ def packaged_self_test(arguments: list[str]) -> int | None:
         media = probe_media(source, ffprobe)
         result = export_video(
             media, output, Region(15, 15, 330, 80), ffmpeg, ffprobe,
-            prefer_nvenc=False,
+            prefer_hardware=False,
         )
         payload = {
             "ok": True,
-            "ffmpeg": "bundled:ffmpeg/bin/ffmpeg.exe",
-            "ffprobe": "bundled:ffmpeg/bin/ffprobe.exe",
+            "ffmpeg": f"bundled:ffmpeg/bin/{ffmpeg.name}",
+            "ffprobe": f"bundled:ffmpeg/bin/{ffprobe.name}",
             "output": result.output_path.name,
             "frames": result.frames_written,
             "encoder": result.encoder,

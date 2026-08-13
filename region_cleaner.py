@@ -29,7 +29,7 @@ def main() -> int:
     parser.add_argument("input", type=Path)
     parser.add_argument("--region", "-r", required=True, type=parse_region)
     parser.add_argument("--output", "-o", type=Path)
-    parser.add_argument("--cpu", action="store_true", help="skip the NVENC runtime probe")
+    parser.add_argument("--cpu", action="store_true", help="skip the hardware-encoder runtime probe")
     args = parser.parse_args()
     source = args.input.expanduser().resolve()
     if not source.is_file():
@@ -47,7 +47,7 @@ def main() -> int:
 
     try:
         media = probe_media(source, ffprobe)
-        result = export_video(media, output, args.region, ffmpeg, ffprobe, progress=report, prefer_nvenc=not args.cpu)
+        result = export_video(media, output, args.region, ffmpeg, ffprobe, progress=report, prefer_hardware=not args.cpu)
     except BaseException as exc:
         print(f"\nError: {readable_error(exc)}", file=sys.stderr)
         return 1

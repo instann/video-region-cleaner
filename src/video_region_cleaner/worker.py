@@ -26,7 +26,7 @@ class ExportWorker(QObject):
         region: Region,
         ffmpeg: Path,
         ffprobe: Path,
-        prefer_nvenc: bool,
+        prefer_hardware: bool,
     ) -> None:
         super().__init__()
         self._media = media
@@ -34,7 +34,7 @@ class ExportWorker(QObject):
         self._region = region
         self._ffmpeg = ffmpeg
         self._ffprobe = ffprobe
-        self._prefer_nvenc = prefer_nvenc
+        self._prefer_hardware = prefer_hardware
         self._cancel = Event()
 
     @Slot()
@@ -42,7 +42,7 @@ class ExportWorker(QObject):
         try:
             result = export_video(
                 self._media, self._output, self._region, self._ffmpeg, self._ffprobe,
-                self._cancel, self._emit_progress, self._prefer_nvenc,
+                self._cancel, self._emit_progress, self._prefer_hardware,
             )
             self.succeeded.emit(result)
         except CancelledError:
@@ -58,4 +58,3 @@ class ExportWorker(QObject):
     @Slot()
     def cancel(self) -> None:
         self._cancel.set()
-
