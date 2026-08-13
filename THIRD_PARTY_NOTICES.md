@@ -13,6 +13,8 @@ The original OpenCV TELEA pipeline attribution remains in `NOTICE.md` and `LICEN
 
 ## Bundled FFmpeg build
 
+### Windows x64
+
 - Component: FFmpeg 9.0.1 essentials build, Windows x64 static
 - Build distributor: Gyan Doshi / `GyanD/codexffmpeg`
 - Fixed release asset: `ffmpeg-9.0.1-essentials_build.zip`
@@ -26,3 +28,12 @@ The release directory preserves the distributor's complete `LICENSE`, `README.tx
 Each release directory also includes GNU GPLv3/LGPLv3 texts plus OpenCV and NumPy license bundles under `licenses/`.
 
 Before public distribution, the maintainer must confirm the preferred GPLv3 source-offer mechanism and publish the corresponding source/build information alongside the binary release. This file is an engineering record, not legal advice.
+
+### macOS Apple Silicon and Intel
+
+- Component: source-built FFmpeg / FFprobe 8.1.2 and x264
+- FFmpeg source: official release archive for tag `n8.1.2` (SHA-256 pinned in `packaging/ffmpeg_macos_sources.txt`)
+- x264 source: `videolan/x264`, exact stable commit archive and SHA-256 pinned in the same file
+- Build license: GPLv3 (`--enable-gpl --enable-version3 --enable-libx264`); `--enable-nonfree` is not used and is rejected by the preparation script.
+
+The macOS preparation script builds native arm64 or x86_64 executables from the pinned upstream sources. It bundles the source revisions, FFmpeg license summary, x264 license, and actual runtime configuration under `ffmpeg/doc/`. Corresponding-source obligations apply to binary distribution just as they do to the Windows package.

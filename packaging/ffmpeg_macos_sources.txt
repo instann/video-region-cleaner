@@ -1,0 +1,2 @@
+FFmpeg 8.1.2 source archive SHA-256 464beb5e7bf0c311e68b45ae2f04e9cc2af88851abb4082231742a74d97b524c
+x264 b35605ace3ddf7c1a5d67a2eb553f034aef41d55 source archive SHA-256 6eeb82934e69fd51e043bd8c5b0d152839638d1ce7aa4eea65a3fedcf83ff224

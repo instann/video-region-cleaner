@@ -1,0 +1,47 @@
+name: macOS
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test-and-package:
+    name: ${{ matrix.arch }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: Apple-Silicon
+            runner: macos-15
+          - arch: Intel
+            runner: macos-15-intel
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements-dev.txt
+          python -m pip install -e . --no-deps
+      - name: Prepare FFmpeg
+        run: scripts/prepare_ffmpeg_macos.sh
+      - name: Test
+        env:
+          QT_QPA_PLATFORM: offscreen
+        run: python -m pytest -q
+      - name: Build and verify app bundle
+        run: scripts/build_macos.sh "$(command -v python)"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: VideoRegionCleaner-${{ matrix.arch }}
+          path: |
+            release/VideoRegionCleaner-*-macos-*.zip
+            release/VideoRegionCleaner-*-macos-*.zip.sha256
+            release/macos-e2e/*/E2E_RESULT.json
+          if-no-files-found: error

@@ -17,7 +17,16 @@ from .models import MediaInfo
 
 def application_root() -> Path:
     if getattr(sys, "frozen", False):
-        return Path(sys.executable).resolve().parent
+        executable = Path(sys.executable).resolve()
+        # A PyInstaller macOS bundle keeps data files under Contents/Resources,
+        # while sys.executable lives under Contents/MacOS.
+        if (
+            sys.platform == "darwin"
+            and executable.parent.name == "MacOS"
+            and executable.parent.parent.name == "Contents"
+        ):
+            return executable.parent.parent / "Resources"
+        return executable.parent
     # Nuitka standalone does not consistently expose sys.frozen, but its
     # module __file__ lives beside the compiled executable in the dist folder.
     if "__compiled__" in globals():
@@ -132,28 +141,58 @@ def probe_media(path: Path, ffprobe_path: Path | None = None) -> MediaInfo:
         raise RegionCleanerError("FFprobe 返回了无法识别的媒体信息") from exc
 
 
-def probe_nvenc(ffmpeg_path: Path, timeout: float = 20.0) -> tuple[bool, str]:
+def preferred_hardware_encoder() -> str:
+    """Return the native H.264 hardware encoder for the current platform."""
+    return "h264_videotoolbox" if sys.platform == "darwin" else "h264_nvenc"
+
+
+def hardware_encoder_name(encoder: str | None = None) -> str:
+    return "VideoToolbox" if (encoder or preferred_hardware_encoder()) == "h264_videotoolbox" else "NVENC"
+
+
+def probe_hardware_encoder(
+    ffmpeg_path: Path,
+    timeout: float = 20.0,
+    encoder: str | None = None,
+) -> tuple[bool, str]:
     """Actually encode a tiny frame; listing the encoder is insufficient."""
-    with tempfile.TemporaryDirectory(prefix="vrc_nvenc_") as folder:
+    selected = encoder or preferred_hardware_encoder()
+    name = hardware_encoder_name(selected)
+    encoder_options = (
+        ["-c:v", selected, "-allow_sw", "0", "-b:v", "1M"]
+        if selected == "h264_videotoolbox"
+        else ["-c:v", selected, "-preset", "p5"]
+    )
+    with tempfile.TemporaryDirectory(prefix="vrc_hardware_encoder_") as folder:
         output = Path(folder) / "probe.mp4"
         result = run_command(
             [
                 ffmpeg_path,
                 "-hide_banner", "-loglevel", "error", "-f", "lavfi", "-i",
                 "color=c=black:s=256x256:r=1:d=1", "-frames:v", "1",
-                "-c:v", "h264_nvenc", "-preset", "p5", "-pix_fmt", "yuv420p", output, "-y",
+                *encoder_options, "-pix_fmt", "yuv420p", output, "-y",
             ],
             timeout=timeout,
         )
         if result.returncode == 0 and output.is_file() and output.stat().st_size > 0:
-            return True, "NVENC 实际编码探测成功"
+            return True, f"{name} 实际编码探测成功"
         detail = result.stderr.strip().splitlines()
-        return False, (detail[-1] if detail else "NVENC 实际编码探测失败")
+        return False, (detail[-1] if detail else f"{name} 实际编码探测失败")
 
 
-def encoder_arguments(use_nvenc: bool) -> list[str]:
-    if use_nvenc:
+def probe_nvenc(ffmpeg_path: Path, timeout: float = 20.0) -> tuple[bool, str]:
+    """Backward-compatible explicit NVENC probe."""
+    return probe_hardware_encoder(ffmpeg_path, timeout, "h264_nvenc")
+
+
+def encoder_arguments(encoder: str | bool) -> list[str]:
+    # Preserve the 1.0 bool API: True selected NVENC and False selected x264.
+    if isinstance(encoder, bool):
+        encoder = "h264_nvenc" if encoder else "libx264"
+    if encoder == "h264_nvenc":
         return ["-c:v", "h264_nvenc", "-preset", "p5", "-rc", "vbr", "-cq", "18", "-b:v", "0"]
+    if encoder == "h264_videotoolbox":
+        return ["-c:v", "h264_videotoolbox", "-b:v", "8M", "-maxrate", "12M", "-bufsize", "16M"]
     return ["-c:v", "libx264", "-crf", "18", "-preset", "fast"]
 
 

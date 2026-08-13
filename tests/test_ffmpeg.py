@@ -4,12 +4,22 @@ from pathlib import Path
 from types import SimpleNamespace
 import json
 
-from video_region_cleaner.ffmpeg import encoder_arguments, probe_media, probe_nvenc
+from video_region_cleaner.ffmpeg import (
+    encoder_arguments, preferred_hardware_encoder, probe_hardware_encoder, probe_media, probe_nvenc,
+)
 
 
 def test_encoder_arguments_select_expected_encoder():
+    assert "h264_nvenc" in encoder_arguments("h264_nvenc")
+    assert "h264_videotoolbox" in encoder_arguments("h264_videotoolbox")
+    assert "libx264" in encoder_arguments("libx264")
     assert "h264_nvenc" in encoder_arguments(True)
     assert "libx264" in encoder_arguments(False)
+
+
+def test_macos_prefers_videotoolbox(monkeypatch):
+    monkeypatch.setattr("video_region_cleaner.ffmpeg.sys.platform", "darwin")
+    assert preferred_hardware_encoder() == "h264_videotoolbox"
 
 
 def test_nvenc_requires_successful_real_output(monkeypatch, tmp_path: Path):
@@ -35,6 +45,23 @@ def test_nvenc_command_is_argument_array_and_runtime_encode(monkeypatch, tmp_pat
     assert available
     assert "-f" in captured and "lavfi" in captured
     assert "h264_nvenc" in captured
+
+
+def test_videotoolbox_probe_disables_software_fallback(monkeypatch, tmp_path: Path):
+    captured = []
+
+    def unsuccessful(args, timeout=30):
+        captured.extend(args)
+        return SimpleNamespace(returncode=1, stderr="hardware unavailable", stdout="")
+
+    monkeypatch.setattr("video_region_cleaner.ffmpeg.run_command", unsuccessful)
+    available, detail = probe_hardware_encoder(
+        tmp_path / "ffmpeg", encoder="h264_videotoolbox",
+    )
+    assert not available
+    assert "h264_videotoolbox" in captured
+    assert "-allow_sw" in captured and "0" in captured
+    assert "hardware unavailable" in detail
 
 
 def test_probe_media_reports_visual_dimensions_for_rotation_metadata(monkeypatch, tmp_path: Path):

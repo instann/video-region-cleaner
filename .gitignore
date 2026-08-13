@@ -39,13 +39,19 @@ examples/final_v2_preview.jpg
 vendor/ffmpeg/*.zip
 vendor/ffmpeg/*.sha256
 vendor/ffmpeg/staging/
+vendor/ffmpeg/staging-macos-*/
+vendor/ffmpeg/source-cache/
 vendor/ffmpeg/bin/
+vendor/ffmpeg/doc-macos/
 
 # Release binaries belong in GitHub Releases, not the Git source tree.
 # Small JSON verification records, SHA256SUMS.txt, and metadata remain tracked.
 release/pyinstaller/
 release/nuitka/
+release/macos/
+release/macos-e2e/
 release/*.zip
+release/*.zip.sha256
 release/e2e/*.mp4
 release/packaged_e2e/**/*.mp4
 release/**/*.log

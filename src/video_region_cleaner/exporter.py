@@ -13,7 +13,7 @@ from uuid import uuid4
 import cv2
 
 from .errors import CancelledError, RegionCleanerError
-from .ffmpeg import encoder_arguments, probe_nvenc, verify_output
+from .ffmpeg import encoder_arguments, preferred_hardware_encoder, probe_hardware_encoder, verify_output
 from .models import ExportProgress, ExportResult, MediaInfo, Region
 from .naming import validate_output_path
 from .video import build_consensus_mask, open_capture, restore_frame
@@ -30,7 +30,7 @@ def _command(
     ffmpeg: Path,
     media: MediaInfo,
     temp_output: Path,
-    use_nvenc: bool,
+    encoder: str,
     copy_audio: bool,
 ) -> list[str]:
     return [
@@ -38,7 +38,7 @@ def _command(
         "-f", "rawvideo", "-pix_fmt", "bgr24",
         "-video_size", f"{media.width}x{media.height}",
         "-framerate", f"{media.fps:.10f}", "-i", "pipe:0", "-i", str(media.path),
-        "-map", "0:v:0", "-map", "1:a?", *encoder_arguments(use_nvenc),
+        "-map", "0:v:0", "-map", "1:a?", *encoder_arguments(encoder),
         "-pix_fmt", "yuv420p", "-c:a", "copy" if copy_audio else "aac",
         *([] if copy_audio else ["-b:a", "192k"]),
         "-shortest", "-movflags", "+faststart", str(temp_output), "-y",
@@ -60,7 +60,7 @@ def _run_stream(
     mask,
     ffmpeg: Path,
     temp_output: Path,
-    use_nvenc: bool,
+    encoder: str,
     copy_audio: bool,
     cancel: Event,
     progress: ProgressCallback | None,
@@ -69,7 +69,7 @@ def _run_stream(
     capture = open_capture(media.path)
     creationflags = subprocess.CREATE_NO_WINDOW if os.name == "nt" else 0
     process = subprocess.Popen(
-        _command(ffmpeg, media, temp_output, use_nvenc, copy_audio),
+        _command(ffmpeg, media, temp_output, encoder, copy_audio),
         stdin=subprocess.PIPE,
         stdout=subprocess.DEVNULL,
         stderr=subprocess.PIPE,
@@ -126,9 +126,15 @@ def export_video(
     ffprobe: Path,
     cancel: Event | None = None,
     progress: ProgressCallback | None = None,
-    prefer_nvenc: bool = True,
+    prefer_hardware: bool = True,
+    *,
+    prefer_nvenc: bool | None = None,
 ) -> ExportResult:
     """Export to a sibling temporary file, verify it, then atomically publish it."""
+    # Keep the public 1.0 keyword working while the implementation becomes
+    # platform-neutral (VideoToolbox on macOS, NVENC on Windows).
+    if prefer_nvenc is not None:
+        prefer_hardware = prefer_nvenc
     output = validate_output_path(media.path, output)
     output.parent.mkdir(parents=True, exist_ok=True)
     region.validate(media.width, media.height)
@@ -140,32 +146,38 @@ def export_video(
     if cancel.is_set():
         raise CancelledError("导出已取消")
 
-    nvenc_ok, _ = probe_nvenc(ffmpeg) if prefer_nvenc else (False, "已选择 CPU 编码")
-    attempts = [(nvenc_ok, True)]
+    hardware_encoder = preferred_hardware_encoder()
+    hardware_ok, _ = (
+        probe_hardware_encoder(ffmpeg, encoder=hardware_encoder)
+        if prefer_hardware
+        else (False, "已选择 CPU 编码")
+    )
+    initial_encoder = hardware_encoder if hardware_ok else "libx264"
+    attempts = [(initial_encoder, True)]
     if media.has_audio:
-        attempts.append((nvenc_ok, False))
-    if nvenc_ok:
-        attempts.append((False, True))
+        attempts.append((initial_encoder, False))
+    if hardware_ok:
+        attempts.append(("libx264", True))
         if media.has_audio:
-            attempts.append((False, False))
+            attempts.append(("libx264", False))
     # Preserve order while removing duplicate tuples.
     attempts = list(dict.fromkeys(attempts))
     temp_output = _temp_output(output)
     last_error: BaseException | None = None
-    used_fallback = prefer_nvenc and not nvenc_ok
+    used_fallback = prefer_hardware and not hardware_ok
     try:
-        for attempt_index, (use_nvenc, copy_audio) in enumerate(attempts):
+        for attempt_index, (encoder, copy_audio) in enumerate(attempts):
             if cancel.is_set():
                 raise CancelledError("导出已取消")
             temp_output.unlink(missing_ok=True)
             if attempt_index:
                 used_fallback = True
                 if progress:
-                    detail = "CPU 编码" if not use_nvenc else "音频转码"
+                    detail = "CPU 编码" if encoder == "libx264" else "音频转码"
                     progress(ExportProgress(0, media.frame_count, time.perf_counter() - started, None, f"自动回退：{detail}"))
             try:
                 written = _run_stream(
-                    media, mask, ffmpeg, temp_output, use_nvenc, copy_audio,
+                    media, mask, ffmpeg, temp_output, encoder, copy_audio,
                     cancel, progress, started,
                 )
                 verification = verify_output(temp_output, media, ffprobe)
@@ -174,7 +186,7 @@ def export_video(
                 if progress:
                     progress(ExportProgress(media.frame_count, media.frame_count, elapsed, 0.0, "导出和媒体校验完成"))
                 return ExportResult(
-                    output, elapsed, written, "h264_nvenc" if use_nvenc else "libx264",
+                    output, elapsed, written, encoder,
                     used_fallback, verification,
                 )
             except CancelledError:

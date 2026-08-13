@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import os
 from pathlib import Path
 import time
 
@@ -13,17 +14,18 @@ from video_region_cleaner.models import Region
 
 def main() -> int:
     root = Path(__file__).resolve().parents[1]
-    ffmpeg = find_tool("ffmpeg", root / "vendor" / "ffmpeg" / "bin" / "ffmpeg.exe")
-    ffprobe = find_tool("ffprobe", root / "vendor" / "ffmpeg" / "bin" / "ffprobe.exe")
+    suffix = ".exe" if os.name == "nt" else ""
+    ffmpeg = find_tool("ffmpeg", root / "vendor" / "ffmpeg" / "bin" / f"ffmpeg{suffix}")
+    ffprobe = find_tool("ffprobe", root / "vendor" / "ffmpeg" / "bin" / f"ffprobe{suffix}")
     if not ffmpeg or not ffprobe:
-        raise SystemExit("Prepare FFmpeg first with scripts/prepare_ffmpeg.ps1")
+        raise SystemExit("Prepare FFmpeg first with the script for your operating system")
     source = root / "examples" / "demo_overlay.mp4"
     output = root / "release" / "e2e" / "demo_overlay_clean.mp4"
     output.parent.mkdir(parents=True, exist_ok=True)
     output.unlink(missing_ok=True)
     media = probe_media(source, ffprobe)
     started = time.perf_counter()
-    result = export_video(media, output, Region(15, 15, 330, 80), ffmpeg, ffprobe, prefer_nvenc=True)
+    result = export_video(media, output, Region(15, 15, 330, 80), ffmpeg, ffprobe, prefer_hardware=True)
     evidence = {
         "source": source.name,
         "output": str(output.relative_to(root)),
@@ -48,4 +50,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-
