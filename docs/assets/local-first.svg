@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="420" viewBox="0 0 1440 420" role="img" aria-labelledby="title desc">
+  <title id="title">Local-first video processing</title>
+  <desc id="desc">A video enters a desktop application and exits as a new file. No cloud upload is involved.</desc>
+  <defs>
+    <linearGradient id="blue" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#54d8ff"/><stop offset="1" stop-color="#4b79ff"/></linearGradient>
+    <filter id="shadow" x="-20%" y="-30%" width="140%" height="180%"><feDropShadow dx="0" dy="10" stdDeviation="12" flood-color="#020712" flood-opacity=".34"/></filter>
+  </defs>
+  <rect width="1440" height="420" rx="28" fill="#0b1523"/>
+  <g font-family="Segoe UI, PingFang SC, Microsoft YaHei, sans-serif">
+    <g filter="url(#shadow)"><rect x="84" y="82" width="260" height="256" rx="24" fill="#142437" stroke="#31506d"/></g>
+    <rect x="142" y="130" width="144" height="112" rx="14" fill="#1f4b67"/>
+    <path d="M194 160l48 26-48 26z" fill="#a5eeff"/>
+    <text x="214" y="286" text-anchor="middle" fill="#f3f8ff" font-size="24" font-weight="700">本地视频</text>
+    <path d="M365 210h164" stroke="url(#blue)" stroke-width="8" stroke-linecap="round"/>
+    <path d="M506 188l42 22-42 22z" fill="#61d8ff"/>
+    <g filter="url(#shadow)"><rect x="555" y="55" width="330" height="310" rx="28" fill="#142437" stroke="#3c6386"/></g>
+    <rect x="584" y="93" width="272" height="36" rx="9" fill="#0b1420"/>
+    <circle cx="610" cy="111" r="7" fill="#4dd8ff"/><rect x="628" y="104" width="154" height="14" rx="7" fill="#3a5975"/>
+    <rect x="584" y="150" width="174" height="126" rx="10" fill="#183d55"/>
+    <rect x="610" y="176" width="110" height="52" rx="3" fill="#1c2740" stroke="#88e7ff" stroke-width="3"/>
+    <rect x="777" y="150" width="79" height="126" rx="10" fill="#0b1420"/>
+    <rect x="794" y="171" width="46" height="10" rx="5" fill="#456784"/><rect x="794" y="196" width="38" height="10" rx="5" fill="#2e4b66"/><rect x="794" y="233" width="47" height="21" rx="7" fill="url(#blue)"/>
+    <text x="720" y="321" text-anchor="middle" fill="#f3f8ff" font-size="24" font-weight="700">Video Region Cleaner</text>
+    <path d="M910 210h164" stroke="url(#blue)" stroke-width="8" stroke-linecap="round"/>
+    <path d="M1051 188l42 22-42 22z" fill="#61d8ff"/>
+    <g filter="url(#shadow)"><rect x="1095" y="82" width="260" height="256" rx="24" fill="#142437" stroke="#31506d"/></g>
+    <path d="M1163 138h91l27 27v105h-118z" fill="#1f4b67"/>
+    <path d="M1254 138v28h27" fill="#315f7d"/>
+    <path d="M1185 222h74" stroke="#9ff0b5" stroke-width="12" stroke-linecap="round"/>
+    <path d="M1185 193h48" stroke="#84dfff" stroke-width="10" stroke-linecap="round"/>
+    <text x="1225" y="305" text-anchor="middle" fill="#f3f8ff" font-size="24" font-weight="700">新视频</text>
+    <g transform="translate(643 382)"><path d="M0 10l7-7 7 7 7-7 7 7v10H0z" fill="#69d9ff"/><rect x="7" y="10" width="14" height="13" rx="2" fill="#69d9ff"/></g>
+    <text x="720" y="408" text-anchor="middle" fill="#91adc5" font-size="16">不上传媒体 · 不发送遥测 · 不覆盖源文件</text>
+  </g>
+</svg>

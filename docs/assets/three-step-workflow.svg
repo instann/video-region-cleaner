@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="520" viewBox="0 0 1440 520" role="img" aria-labelledby="title desc">
+  <title id="title">Video Region Cleaner three-step workflow</title>
+  <desc id="desc">Open a local video, select a fixed rectangle, then export a new video.</desc>
+  <defs>
+    <linearGradient id="surface" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#152336"/>
+      <stop offset="1" stop-color="#0d1725"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#49d5ff"/>
+      <stop offset="1" stop-color="#3d8bff"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-25%" width="140%" height="160%">
+      <feDropShadow dx="0" dy="12" stdDeviation="13" flood-color="#030814" flood-opacity=".32"/>
+    </filter>
+  </defs>
+  <rect width="1440" height="520" rx="28" fill="#08111f"/>
+  <path d="M0 0h1440v520H0z" fill="url(#surface)"/>
+  <g fill="none" stroke="#30506e" stroke-width="2" stroke-dasharray="8 12" opacity=".7">
+    <path d="M438 260h100"/>
+    <path d="M906 260h100"/>
+  </g>
+  <g filter="url(#shadow)">
+    <rect x="52" y="70" width="386" height="380" rx="24" fill="#101c2b" stroke="#28445f"/>
+    <rect x="520" y="70" width="386" height="380" rx="24" fill="#101c2b" stroke="#28445f"/>
+    <rect x="988" y="70" width="400" height="380" rx="24" fill="#101c2b" stroke="#28445f"/>
+  </g>
+  <g font-family="Segoe UI, PingFang SC, Microsoft YaHei, sans-serif">
+    <g>
+      <circle cx="100" cy="120" r="25" fill="url(#accent)"/>
+      <text x="100" y="128" text-anchor="middle" fill="white" font-size="22" font-weight="700">1</text>
+      <text x="140" y="117" fill="#f4f8ff" font-size="26" font-weight="700">打开本地视频</text>
+      <text x="140" y="151" fill="#9bb0c7" font-size="18">拖入文件，或点击选择</text>
+      <rect x="87" y="194" width="316" height="174" rx="12" fill="#0a1320" stroke="#31516f"/>
+      <rect x="106" y="214" width="128" height="132" rx="8" fill="#17415a"/>
+      <path d="M151 247l52 33-52 33z" fill="#7de1ff"/>
+      <rect x="255" y="222" width="118" height="14" rx="7" fill="#50708d"/>
+      <rect x="255" y="253" width="86" height="12" rx="6" fill="#33536f"/>
+      <rect x="255" y="281" width="103" height="12" rx="6" fill="#33536f"/>
+      <rect x="255" y="318" width="73" height="10" rx="5" fill="#28445f"/>
+      <text x="87" y="411" fill="#88a2ba" font-size="17">支持 MP4 · MOV · MKV · WebM</text>
+    </g>
+    <g>
+      <circle cx="568" cy="120" r="25" fill="url(#accent)"/>
+      <text x="568" y="128" text-anchor="middle" fill="white" font-size="22" font-weight="700">2</text>
+      <text x="608" y="117" fill="#f4f8ff" font-size="26" font-weight="700">框选固定区域</text>
+      <text x="608" y="151" fill="#9bb0c7" font-size="18">移动、缩放或重画</text>
+      <rect x="555" y="194" width="316" height="174" rx="12" fill="#0a1320" stroke="#31516f"/>
+      <path d="M555 194h79v174h-79z" fill="#ff564c"/>
+      <path d="M634 194h79v174h-79z" fill="#ffdc32"/>
+      <path d="M713 194h79v174h-79z" fill="#46d171"/>
+      <path d="M792 194h79v174h-79z" fill="#3988f5"/>
+      <rect x="588" y="218" width="166" height="58" rx="3" fill="#16253d" fill-opacity=".52" stroke="#8feaff" stroke-width="4"/>
+      <g fill="#e7fbff" stroke="#00465b" stroke-width="1"><rect x="582" y="212" width="12" height="12"/><rect x="748" y="212" width="12" height="12"/><rect x="582" y="270" width="12" height="12"/><rect x="748" y="270" width="12" height="12"/></g>
+      <text x="555" y="411" fill="#88a2ba" font-size="17">坐标始终对应原视频像素</text>
+    </g>
+    <g>
+      <circle cx="1036" cy="120" r="25" fill="url(#accent)"/>
+      <text x="1036" y="128" text-anchor="middle" fill="white" font-size="22" font-weight="700">3</text>
+      <text x="1076" y="117" fill="#f4f8ff" font-size="26" font-weight="700">预览后导出</text>
+      <text x="1076" y="151" fill="#9bb0c7" font-size="18">保留音频，源文件不覆盖</text>
+      <rect x="1023" y="194" width="330" height="174" rx="12" fill="#0a1320" stroke="#31516f"/>
+      <rect x="1047" y="218" width="280" height="20" rx="10" fill="#20364c"/>
+      <rect x="1047" y="218" width="220" height="20" rx="10" fill="url(#accent)"/>
+      <path d="M1070 278h26v54h-26z" fill="#5cc8e9"/><path d="M1106 257h26v75h-26z" fill="#72df9b"/><path d="M1142 232h26v100h-26z" fill="#7e9dff"/>
+      <path d="M1216 274c15-18 30-18 45 0s30 18 45 0" fill="none" stroke="#9ae9ff" stroke-width="7" stroke-linecap="round"/>
+      <rect x="1047" y="387" width="280" height="38" rx="12" fill="url(#accent)"/>
+      <text x="1187" y="413" text-anchor="middle" fill="white" font-size="18" font-weight="700">导出新视频</text>
+    </g>
+  </g>
+</svg>
