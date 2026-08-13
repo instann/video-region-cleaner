@@ -1,0 +1,10 @@
+.venv/
+__pycache__/
+*.pyc
+dist/
+build/
+*.spec
+*_clean.mp4
+*.processing_time.txt
+examples/final_frame_preview.jpg
+examples/final_v2_preview.jpg
