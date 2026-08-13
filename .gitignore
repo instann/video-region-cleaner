@@ -1,10 +1,51 @@
+# Python environments and caches
 .venv/
+venv/
+env/
 __pycache__/
-*.pyc
-dist/
-build/
-*.spec
+*.py[cod]
+*.pyo
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+*.egg-info/
+
+# IDE and OS files
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Build products
+/build/
+/dist/
+/*.spec
+
+# Generated video outputs and previews
 *_clean.mp4
 *.processing_time.txt
+*.part
+*.tmp
 examples/final_frame_preview.jpg
 examples/final_v2_preview.jpg
+
+# Downloaded FFmpeg archive, extracted staging area, and local binaries.
+# Provenance and license documents under vendor/ffmpeg/doc remain tracked.
+vendor/ffmpeg/*.zip
+vendor/ffmpeg/*.sha256
+vendor/ffmpeg/staging/
+vendor/ffmpeg/bin/
+
+# Release binaries belong in GitHub Releases, not the Git source tree.
+# Small JSON verification records, SHA256SUMS.txt, and metadata remain tracked.
+release/pyinstaller/
+release/nuitka/
+release/*.zip
+release/e2e/*.mp4
+release/packaged_e2e/**/*.mp4
+release/**/*.log
