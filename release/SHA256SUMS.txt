@@ -1,0 +1,4 @@
+99e6ef9c505d3af7801bb8375df0df10c4e0d823956d334a0cf20e3655f70a1c  VideoRegionCleaner-1.0.0-windows-x64-nuitka.zip
+a54ae638a74a65c40d32697adbb966a493db3fb962377c7f1760768337e67a64  VideoRegionCleaner-1.0.0-windows-x64-pyinstaller.zip
+d48ac53b27cd0a2302c3668899d7a1a320f38ce4ae29faa3f566c0e3b210adca  pyinstaller/VideoRegionCleaner/VideoRegionCleaner.exe
+91b79a02e710c4c10bb40cbfd893d6e09aab63b15a145c2fda0a262a20a54886  nuitka/run_gui.dist/VideoRegionCleaner.exe

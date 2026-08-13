@@ -1,0 +1,16 @@
+{
+  "source": "demo_overlay.mp4",
+  "output": "release\\e2e\\demo_overlay_clean.mp4",
+  "wall_seconds": 6.038,
+  "pipeline_seconds": 6.038,
+  "frames": 144,
+  "encoder": "libx264",
+  "fallback": true,
+  "verified": {
+    "duration": 6.0,
+    "width": 960,
+    "height": 540,
+    "fps": 24.0,
+    "has_audio": true
+  }
+}

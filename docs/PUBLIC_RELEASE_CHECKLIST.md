@@ -1,14 +1,21 @@
 # Public release checklist
 
-- Keep the project name, screenshots, examples, and README platform-neutral.
-- Use only self-created or explicitly licensed demo media.
-- Preserve the upstream MIT copyright notice and `NOTICE.md` attribution.
-- Do not market the project as a way to bypass payments, subscriptions,
-  access controls, platform restrictions, or contractual requirements.
-- Do not use third-party names or logos in the repository name or branding.
-- State that users must own or be authorized to modify input media.
-- Ship FFmpeg only under terms compatible with the chosen FFmpeg build; a
-  simpler option is to download it during setup or document installation.
-- Run antivirus checks and publish SHA-256 hashes for Windows release assets.
-- Test the packaged executable in a clean Windows VM before publishing.
-- Treat this checklist as engineering guidance, not legal advice.
+Status date: 2026-08-13. `[x]` is verified in this workspace; `[ ]` remains a maintainer action before public release.
+
+- [x] Project name, UI, screenshots, examples, and README are platform-neutral.
+- [x] Repository screenshots and tests use only the self-created synthetic demo media.
+- [x] Upstream MIT copyright notice and `NOTICE.md` attribution are preserved.
+- [x] README states authorized-use boundaries and user responsibility for law, contracts, licenses, platform terms, disclosure, and attribution.
+- [x] README states project independence and that it provides no legal advice.
+- [x] Marketing language does not claim payment/access/platform restriction circumvention.
+- [x] Application runs locally without media upload or telemetry.
+- [x] Fixed FFmpeg 9.0.1 x64 build source, version, license, configuration and SHA-256 are recorded; license/readme ship in each release directory.
+- [x] Windows x64 PyInstaller and Nuitka standalone release directories were built and launched on the development host without invoking Python.
+- [x] Automated tests, synthetic E2E export, media verification, and GUI screenshot suite pass; see `docs/VERIFICATION_REPORT.md`.
+- [x] SHA-256 generation script is included and release hashes are published in `release/SHA256SUMS.txt`.
+- [ ] Test both packaged releases in a genuinely clean Windows 10/11 x64 VM and archive evidence. Sandbox/Hyper-V was unavailable without elevation in this session.
+- [ ] Run antivirus scans on final ZIP assets and record engine, definitions date, and results.
+- [ ] Decide whether to Authenticode-sign the EXE files and document the publisher identity.
+- [ ] Confirm and publish the GPLv3 corresponding-source/source-offer mechanism for the exact bundled FFmpeg build.
+- [ ] Immediately before making the repository public, manually review full Git history and release assets for private media, third-party marks, tokens, local usernames/paths, and other sensitive material.
+- [ ] Obtain a final human legal/licensing review if the maintainer requires one; this checklist is engineering guidance, not legal advice.
