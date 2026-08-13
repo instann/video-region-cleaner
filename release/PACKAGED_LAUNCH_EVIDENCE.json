@@ -1,0 +1,28 @@
+﻿[
+    {
+        "package":  "PyInstaller",
+        "executable":  "%TEMP%/VRC clean launch 中文 空格/PyInstaller/VideoRegionCleaner.exe",
+        "started_at":  "2026-08-13T19:01:02.8045523+08:00",
+        "alive_when_checked":  true,
+        "window_ready_seconds":  1.66,
+        "window_title":  "Video Region Cleaner",
+        "nonzero_window_handle":  true,
+        "pythonhome_unset":  true,
+        "pythonpath_unset":  true,
+        "minimal_path":  "C:\\Windows\\System32;C:\\Windows",
+        "working_directory":  "C:\\Windows\\System32"
+    },
+    {
+        "package":  "Nuitka",
+        "executable":  "%TEMP%/VRC clean launch 中文 空格/Nuitka/VideoRegionCleaner.exe",
+        "started_at":  "2026-08-13T19:01:04.8954266+08:00",
+        "alive_when_checked":  true,
+        "window_ready_seconds":  1.641,
+        "window_title":  "Video Region Cleaner",
+        "nonzero_window_handle":  true,
+        "pythonhome_unset":  true,
+        "pythonpath_unset":  true,
+        "minimal_path":  "C:\\Windows\\System32;C:\\Windows",
+        "working_directory":  "C:\\Windows\\System32"
+    }
+]

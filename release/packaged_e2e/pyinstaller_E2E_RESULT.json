@@ -1,0 +1,13 @@
+{
+  "ok": true,
+  "ffmpeg": "bundled:ffmpeg/bin/ffmpeg.exe",
+  "ffprobe": "bundled:ffmpeg/bin/ffprobe.exe",
+  "output": "中文 输出.mp4",
+  "frames": 144,
+  "encoder": "libx264",
+  "duration": 6.0,
+  "width": 960,
+  "height": 540,
+  "fps": 24.0,
+  "has_audio": true
+}
